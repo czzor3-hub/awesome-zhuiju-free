@@ -1,0 +1,25 @@
+name: Sync Upstream
+on:
+  schedule:
+    # 每天北京时间 10:00（UTC 02:00）自动同步一次（原仓库在 09:00 左右更新）
+    - cron: '0 2 * * *'
+  workflow_dispatch: # 也支持手动一键触发
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Sync with upstream
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/laoma528/awesome-zhuiju-free.git
+          git fetch upstream
+          git merge upstream/main --no-edit
+          git push origin main
